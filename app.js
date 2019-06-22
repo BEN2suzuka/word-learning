@@ -9,20 +9,37 @@ var passport = require('passport');
 var Strategy = require('passport-twitter').Strategy;
 var config = require('./config');
 
+var User = require('./models/user');
+var Word = require('./models/word');
+var Memory = require('./models/memory');
+User.sync().then(() => {
+  Word.belongsTo(User, {foreignKey: 'createdBy'});
+  Memory.belongsTo(User, {foreignKey: 'userId'});
+  Word.sync().then(() => {
+    Memory.belongsTo(Word, {foreignKey: 'wordId'});
+    Memory.sync();
+  });
+});
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 passport.use(new Strategy({
-    consumerKey: config.twitter.consumerKey,
-    consumerSecret: config.twitter.consumerSecret,
-    callbackURL: config.twitter.callbackURL
-  },
-  function(token, tokenSecret, profile, cb) {
+  consumerKey: config.twitter.consumerKey,
+  consumerSecret: config.twitter.consumerSecret,
+  callbackURL: config.twitter.callbackURL
+},
+  function (token, tokenSecret, profile, done) {
     process.nextTick(function () {
-      return cb(null, profile);
+      User.upsert({
+        userId: profile.id,
+        username: profile.username
+      }).then(() => {
+        done(null, profile);
+      });
     });
-  })
-);
+  }
+));
 
 passport.serializeUser(function(user, cb) {
   cb(null, user);
