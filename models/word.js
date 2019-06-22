@@ -17,8 +17,8 @@ const Word = loader.database.define('words', {
     type: Sequelize.STRING,
     allowNull: false
   },
-  wordGroup: {
-    type: Sequelize.STRING,
+  wordGroupId: {
+    type: Sequelize.UUID,
     allowNull: false
   },
   createdBy: {
@@ -34,7 +34,7 @@ const Word = loader.database.define('words', {
   timestamps: true,
   indexes: [
     {
-      fields: ['createdBy', 'wordGroup']
+      fields: ['createdBy', 'wordGroupId']
     }
   ]
 });
