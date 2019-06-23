@@ -1,9 +1,23 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const Wordgroup = require('../models/wordgroup');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: '単語帳アプリ', user: req.user });
+  const title = '単語帳アプリ'
+  if (req.user) {
+    Wordgroup.findAll({
+      where: {createdBy: req.user.id},
+    }).then((wordGroups) => {
+      res.render('index', {
+        title: title,
+        user: req.user,
+        wordGroups: wordGroups
+      });
+    });
+  } else {
+    res.render('index', { title: title, user: req.user });
+  }
 });
 
 module.exports = router;

@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  div
+    if user
+      div
+        a(href="/logout") #{user.displayName} をログアウト
+      h3 単語グループ一覧
+      - var hasWordGroup = wordGroups.length > 0
+      if hasWordGroup
+        h5 あなたは単語グループを所有しています
+        p #{wordGroups[0].wordGroupId}
+        p #{wordGroups[0].wordGroupName}
+        p #{wordGroups[0].createdBy}
+      else
+        h5 まずは単語グループを新規作成してください。
+        form(method="post", action="/words/firstgroup")
+          button(type="submit") 単語グループ「未分類」を新規作成
+    else
+      h3 #{title} では Twitter アカウントを利用します。
+      a(href="/login") Twitter でログイン

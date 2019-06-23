@@ -3,11 +3,30 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-
-  if user
-    p 現在 #{user.displayName} でログイン中
-    a(href="/logout") ログアウト
-  else
-    a(href="/login") Twitterでログイン
-
+  div
+    if user
+      div
+        a(href="/logout") #{user.displayName} をログアウト
+      h3 単語グループ一覧
+      - var hasWordGroup = wordGroups.length > 0
+      if hasWordGroup
+        h5 あなたは単語グループを所有しています
+        form(method="post", action="/words")
+          div
+            h5 グループ ID
+            input(type="text" name="wordGroupId")
+          div
+            h5 単語
+            input(type="text" name="wordName")
+          div
+            h5 単語の答え
+            input(type="text" name="wordAnswer")
+          button(type="submit") 単語を追加
+      else
+        h5 まずは単語グループを新規作成してください。
+        form(method="post", action="/words/wordgroups/firstgroup")
+          button(type="submit") 単語グループ「未分類」を新規作成
+    else
+      h3 #{title} では Twitter アカウントを利用します。
+      a(href="/login") Twitter でログイン
 
