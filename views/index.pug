@@ -6,7 +6,7 @@ block content
   div
     if user
       div
-        a(href="/logout") #{user.displayName} をログアウト
+        a(href="/logout") #{user.username} をログアウト
       - var hasWordGroup = wordGroups.length > 0
       if hasWordGroup
         h5 単語登録フォーム
