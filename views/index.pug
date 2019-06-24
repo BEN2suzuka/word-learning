@@ -7,10 +7,9 @@ block content
     if user
       div
         a(href="/logout") #{user.displayName} をログアウト
-      h3 単語グループ一覧
       - var hasWordGroup = wordGroups.length > 0
       if hasWordGroup
-        h5 あなたは単語グループを所有しています
+        h5 単語登録フォーム
         form(method="post", action="/words")
           div
             h5 グループ ID
@@ -21,12 +20,20 @@ block content
           div
             h5 単語の答え
             input(type="text" name="wordAnswer")
-          button(type="submit") 単語を追加
+          button(type="submit") 単語を登録する
+        h3 単語グループ一覧
+        table.table
+          tr
+            th 単語グループ名
+          each wordGroup in wordGroups
+            tr
+              td
+                a(href=`/words/wordgroups/${wordGroup.wordGroupId}`) #{wordGroup.wordGroupName}
       else
         h5 まずは単語グループを新規作成してください。
         form(method="post", action="/words/wordgroups/firstgroup")
           button(type="submit") 単語グループ「未分類」を新規作成
     else
-      h3 #{title} では Twitter アカウントを利用します。
-      a(href="/login") Twitter でログイン
+      div
+        a(href="/login") Twitter でログイン
 
