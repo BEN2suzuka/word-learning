@@ -10,7 +10,7 @@ block content
       - var hasWordGroup = wordGroups.length > 0
       if hasWordGroup
         h5 単語登録フォーム
-        form(method="post", action="/words")
+        form(method="post", action="/words/new")
           div
             h5 グループ ID
             input(type="text" name="wordGroupId")

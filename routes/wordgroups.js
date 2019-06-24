@@ -13,7 +13,6 @@ router.post('/wordgroups/firstgroup', authenticationEnsurer, (req, res, next) =>
     wordGroupName: '未分類',
     createdBy: req.user.id
   }).then((wordGroup) => {
-    console.log('new group created: ' + wordGroup);  // あとで消す？
     res.redirect('/words/wordgroups/' + wordGroup.wordGroupId);
   });
 });
@@ -30,7 +29,8 @@ router.get('/wordgroups/:wordGroupId', authenticationEnsurer, (req, res, next) =
     if (wordGroup) {
       storedWordGroup = wordGroup;
       return Word.findAll({
-        where: { wordGroupId: wordGroup.wordGroupId }
+        where: { wordGroupId: req.params.wordGroupId },
+        order: [['"updatedAt"', 'DESC']]
       });
     } else {
       const err = new Error('指定された単語グループは見つかりません');

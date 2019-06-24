@@ -12,22 +12,16 @@ var config = require('./config');
 var User = require('./models/user');
 var Wordgroup = require('./models/wordgroup');
 var Word = require('./models/word');
-var Memory = require('./models/memory');
 User.sync().then(() => {
   Word.belongsTo(User, {foreignKey: 'createdBy'});
-  Memory.belongsTo(User, {foreignKey: 'userId'});
   Wordgroup.belongsTo(User, {foreignKey: 'createdBy'});
   Wordgroup.sync().then(() => {
     Word.belongsTo(Wordgroup, {foreignKey: 'wordGroupId'});
-    Word.sync().then(() => {
-      Memory.belongsTo(Word, {foreignKey: 'wordId'});
-      Memory.sync();
-    });
+    Word.sync();
   });
 });
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var wordsRouter = require('./routes/words');
 var wordGroupsRouter = require('./routes/wordgroups');
 
@@ -74,7 +68,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/words', wordsRouter);
 app.use('/words', wordGroupsRouter);
 

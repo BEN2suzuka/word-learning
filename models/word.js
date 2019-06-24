@@ -9,6 +9,10 @@ const Word = loader.database.define('words', {
     autoIncrement: true,
     allowNull: false
   },
+  wordGroupId: {
+    type: Sequelize.UUID,
+    allowNull: false
+  },
   wordName: {
     type: Sequelize.STRING,
     allowNull: false
@@ -17,9 +21,10 @@ const Word = loader.database.define('words', {
     type: Sequelize.STRING,
     allowNull: false
   },
-  wordGroupId: {
-    type: Sequelize.UUID,
-    allowNull: false
+  memory: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   },
   createdBy: {
     type: Sequelize.BIGINT,
@@ -34,7 +39,7 @@ const Word = loader.database.define('words', {
   timestamps: true,
   indexes: [
     {
-      fields: ['createdBy', 'wordGroupId']
+      fields: ['wordGroupId', 'createdBy']
     }
   ]
 });
