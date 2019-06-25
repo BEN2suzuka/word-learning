@@ -53,7 +53,7 @@ describe('/logout', () => {
   });
 });
 
-describe('/words/wordgroups', () => {
+describe('/wordgroups', () => {
   before(() => {
     passportStub.install(app);
     passportStub.login({ id: 0, username: 'testuser' });
@@ -67,8 +67,8 @@ describe('/words/wordgroups', () => {
   it('「未分類」を作成できる', (done) => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
       request(app)
-        .post('/words/wordgroups/firstgroup')
-        .expect('Location', '/words/wordgroups/:wordGroupId')
+        .post('/wordgroups/firstgroup')
+        .expect('Location', '/wordgroups/:wordGroupId')
         .expect(302)
         .end((err, res) => {
           const createdWordGroupPath = res.headers.location;

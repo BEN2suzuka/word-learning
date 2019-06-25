@@ -20,7 +20,7 @@ router.post('/new', authenticationEnsurer, (req, res, next) => {
       wordGroupId: req.body.wordGroupId
     });
   }).then(() => {
-    res.redirect('/words/wordgroups/' + req.body.wordGroupId);
+    res.redirect('/wordgroups/' + req.body.wordGroupId);
   });
 });
 

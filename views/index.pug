@@ -28,10 +28,10 @@ block content
           each wordGroup in wordGroups
             tr
               td
-                a(href=`/words/wordgroups/${wordGroup.wordGroupId}`) #{wordGroup.wordGroupName}
+                a(href=`/wordgroups/${wordGroup.wordGroupId}`) #{wordGroup.wordGroupName}
       else
         h5 まずは単語グループを新規作成してください。
-        form(method="post", action="/words/wordgroups/firstgroup")
+        form(method="post", action="/wordgroups/firstgroup")
           button(type="submit") 単語グループ「未分類」を新規作成
     else
       div

@@ -75,7 +75,7 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/words', wordsRouter);
-app.use('/words', wordGroupsRouter);
+app.use('/wordgroups', wordGroupsRouter);
 
 app.get('/login',
   passport.authenticate('twitter')
