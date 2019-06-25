@@ -21,11 +21,6 @@ const Word = loader.database.define('words', {
     type: Sequelize.STRING,
     allowNull: false
   },
-  memory: {
-    type: Sequelize.BOOLEAN,
-    allowNull: false,
-    defaultValue: false
-  },
   createdBy: {
     type: Sequelize.BIGINT,
     allowNull: false

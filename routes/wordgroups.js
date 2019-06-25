@@ -5,6 +5,7 @@ const authenticationEnsurer = require('./authentication-ensurer');
 const User = require('../models/user');
 const Word = require('../models/word');
 const Wordgroup = require('../models/wordgroup');
+const Memory = require('../models/memory');
 const uuidv4 = require('uuid/v4');
 
 router.post('/wordgroups/firstgroup', authenticationEnsurer, (req, res, next) => {
@@ -19,6 +20,7 @@ router.post('/wordgroups/firstgroup', authenticationEnsurer, (req, res, next) =>
 
 router.get('/wordgroups/:wordGroupId', authenticationEnsurer, (req, res, next) => {
   let storedWordGroup = null;
+  let storedWords = null;
   Wordgroup.findOne({
     include: [{
       model: User,
@@ -31,17 +33,32 @@ router.get('/wordgroups/:wordGroupId', authenticationEnsurer, (req, res, next) =
       return Word.findAll({
         where: { wordGroupId: req.params.wordGroupId },
         order: [['"updatedAt"', 'DESC']]
+      }).then((words) => {
+        storedWords = words;
+        Memory.findAll({
+          where: { userId: req.user.id, wordGroupId: req.params.wordGroupId }
+        }).then((memories) => {
+          const memoryMap = new Map();  // key: wordId, value: memories.memory
+          memories.forEach((m) => {
+            memoryMap.set(m.wordId, m.memory);
+          });
+          storedWords.forEach((w) => {
+            const a = memoryMap.get(w.wordId) || 0;
+            memoryMap.set(w.wordId, a);
+          })
+          console.log(memoryMap);  // TODO 除去する
+          res.render('wordgroup', {
+            wordGroup: storedWordGroup,
+            words: storedWords,
+            memories: memoryMap
+          });
+        });
       });
     } else {
       const err = new Error('指定された単語グループは見つかりません');
       err.status = 404;
       next(err);
     }
-  }).then((words) => {
-    res.render('wordgroup', {
-      wordGroup: storedWordGroup,
-      words: words
-    });
   });
 });
 

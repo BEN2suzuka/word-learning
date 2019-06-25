@@ -11,10 +11,12 @@ block content
       th 単語の答え
       th 覚・不覚
     each word in words
-      tr
-        td
-          button 削除
-        td #{word.wordName}
-        td #{word.wordAnswer}
-        td
-          button #{word.memory}
+      - var memory = memories.get(word.wordId)
+      - var memoryLabels = ['まだ', 'OK!']
+        tr
+          td
+            button 削除
+          td #{word.wordName}
+          td #{word.wordAnswer}
+          td
+            button #{memoryLabels[memory]}

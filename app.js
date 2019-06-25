@@ -12,12 +12,18 @@ var config = require('./config');
 var User = require('./models/user');
 var Wordgroup = require('./models/wordgroup');
 var Word = require('./models/word');
+var Memory = require('./models/memory');
 User.sync().then(() => {
   Word.belongsTo(User, {foreignKey: 'createdBy'});
   Wordgroup.belongsTo(User, {foreignKey: 'createdBy'});
+  Memory.belongsTo(User, {foreignKey: 'userId'});
   Wordgroup.sync().then(() => {
     Word.belongsTo(Wordgroup, {foreignKey: 'wordGroupId'});
-    Word.sync();
+    Memory.belongsTo(Wordgroup, {foreignKey: 'wordGroupId'});
+    Word.sync().then(() => {
+      Memory.belongsTo(Word, {foreignKey: 'wordId'});
+      Memory.sync();
+    });
   });
 });
 
