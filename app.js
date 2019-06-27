@@ -14,22 +14,16 @@ var Wordgroup = require('./models/wordgroup');
 var Word = require('./models/word');
 var Memory = require('./models/memory');
 User.sync().then(() => {
-  Word.belongsTo(User, {foreignKey: 'createdBy'});
-  Wordgroup.belongsTo(User, {foreignKey: 'createdBy'});
-  Memory.belongsTo(User, {foreignKey: 'userId'});
-  Wordgroup.sync().then(() => {
-    Word.belongsTo(Wordgroup, {foreignKey: 'wordGroupId'});
-    Memory.belongsTo(Wordgroup, {foreignKey: 'wordGroupId'});
-    Word.sync().then(() => {
-      Memory.belongsTo(Word, {foreignKey: 'wordId'});
-      Memory.sync();
-    });
-  });
+  Wordgroup.belongsTo(User, { foreignKey: 'createdBy' });
+  Wordgroup.sync();
+  Word.sync();
+  Memory.sync();
 });
 
 var indexRouter = require('./routes/index');
 var wordsRouter = require('./routes/words');
 var wordGroupsRouter = require('./routes/wordgroups');
+var memoriesRouter = require('./routes/memories');
 
 passport.use(new Strategy({
   consumerKey: config.twitter.consumerKey,
@@ -48,11 +42,11 @@ passport.use(new Strategy({
   }
 ));
 
-passport.serializeUser(function(user, cb) {
+passport.serializeUser(function (user, cb) {
   cb(null, user);
 });
 
-passport.deserializeUser(function(obj, cb) {
+passport.deserializeUser(function (obj, cb) {
   cb(null, obj);
 });
 
@@ -76,6 +70,7 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/words', wordsRouter);
 app.use('/wordgroups', wordGroupsRouter);
+app.use('/wordgroups', memoriesRouter);
 
 app.get('/login',
   passport.authenticate('twitter')
@@ -83,14 +78,14 @@ app.get('/login',
 
 app.get('/oauth_callback',
   passport.authenticate('twitter', { failureRedirect: '/' }),
-  function(req, res) {
+  function (req, res) {
     res.redirect('/');
   }
 );
 
 app.get('/logout', function (req, res) {
   req.logout();
-    res.redirect('/');
+  res.redirect('/');
 });
 
 function ensureAuthenticated(req, res, next) {
@@ -99,12 +94,12 @@ function ensureAuthenticated(req, res, next) {
 }
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

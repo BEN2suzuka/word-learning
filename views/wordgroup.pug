@@ -19,4 +19,8 @@ block content
           td #{word.wordName}
           td #{word.wordAnswer}
           td
-            button #{memoryLabels[memory]}
+            button(
+              data-user-id=user.id
+              data-word-id=word.wordId
+              data-wordgroup-id=word.wordGroupId
+              data-memory=memory).memory-toggle-button #{memoryLabels[memory]}

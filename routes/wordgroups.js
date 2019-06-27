@@ -8,17 +8,17 @@ const Wordgroup = require('../models/wordgroup');
 const Memory = require('../models/memory');
 const uuidv4 = require('uuid/v4');
 
-router.post('/wordgroups/firstgroup', authenticationEnsurer, (req, res, next) => {
+router.post('/firstgroup', authenticationEnsurer, (req, res, next) => {
   Wordgroup.create({
     wordGroupId: uuidv4(),
     wordGroupName: '未分類',
     createdBy: req.user.id
   }).then((wordGroup) => {
-    res.redirect('/words/wordgroups/' + wordGroup.wordGroupId);
+    res.redirect('/wordgroups/' + wordGroup.wordGroupId);
   });
 });
 
-router.get('/wordgroups/:wordGroupId', authenticationEnsurer, (req, res, next) => {
+router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
   let storedWordGroup = null;
   let storedWords = null;
   Wordgroup.findOne({
@@ -48,6 +48,7 @@ router.get('/wordgroups/:wordGroupId', authenticationEnsurer, (req, res, next) =
           })
           console.log(memoryMap);  // TODO 除去する
           res.render('wordgroup', {
+            user: req.user,
             wordGroup: storedWordGroup,
             words: storedWords,
             memories: memoryMap

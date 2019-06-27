@@ -9,11 +9,15 @@ router.get('/', function(req, res, next) {
     Wordgroup.findAll({
       where: {createdBy: req.user.id},
     }).then((wordGroups) => {
+      if (wordGroups) {
       res.render('index', {
         title: title,
         user: req.user,
         wordGroups: wordGroups
       });
+    } else {
+      res.render('index', { title: title, user: req.user });
+    }
     });
   } else {
     res.render('index', { title: title, user: req.user });
