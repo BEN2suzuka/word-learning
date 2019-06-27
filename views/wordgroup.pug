@@ -4,6 +4,7 @@ block content
   h4 #{wordGroup.wordGroupName}
   p 作成者: #{wordGroup.user.username}
   h4 このグループには #{words.length} 個の単語が登録されています
+  - var isMine = user.id === wordGroup.user.userId
   table
     tr
       th 削除
@@ -15,7 +16,11 @@ block content
       - var memoryLabels = ['まだ', 'OK!']
         tr
           td
-            button 削除
+            if isMine
+              form(method="post", action=`/words/${word.wordId}/users/${user.id}/delete`)
+                button(type="submit") 削除
+            else
+              p -
           td #{word.wordName}
           td #{word.wordAnswer}
           td
