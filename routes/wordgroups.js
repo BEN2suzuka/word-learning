@@ -73,4 +73,28 @@ router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
   });
 });
 
+router.post('/:wordGroupId/delete', authenticationEnsurer, (req, res, next) => {
+  const wordGroupId = req.params.wordGroupId
+  Memory.findAll({
+    where: { wordGroupId: wordGroupId }
+  }).then((memories) => {
+    const promises = memories.map((m) => { return m.destroy(); });
+    return Promise.all(promises);
+  }).then(() => {
+    return Word.findAll({
+      where: { wordGroupId: wordGroupId }
+    });
+  }).then((words) => {
+    const promises = words.map((w) => { return w.destroy(); });
+    return Promise.all(promises);
+  }).then(() => {
+    return Wordgroup.findById(wordGroupId);
+  }).then((wordgroup) => {
+    return wordgroup.destroy();
+  }).then(() => {
+    console.log('All cleared.')  // TODO 除去する
+    res.redirect('/');
+  });
+});
+
 module.exports = router;

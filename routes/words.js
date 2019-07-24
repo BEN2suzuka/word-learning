@@ -52,6 +52,4 @@ function isMine(req, word) {
   return word && word.createdBy === req.user.id;
 }
 
-
-
 module.exports = router;
