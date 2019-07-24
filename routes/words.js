@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
 const Word = require('../models/word');
-const Wordgroup = require('../models/wordgroup');
 const Memory = require('../models/memory');
 
 router.post('/new', authenticationEnsurer, (req, res, next) => {
@@ -37,15 +36,7 @@ router.post('/:wordId/users/:userId/delete', authenticationEnsurer, (req, res, n
       }).then((memory) => {
         memory.destroy().then(() => {
           storedWord.destroy().then(() => {
-            Wordgroup.findAll({
-              where: { createdBy: req.user.id },
-            }).then((wordGroups) => {
-              res.render('index', {
-                title: '単語帳アプリ',
-                user: req.user,
-                wordGroups: wordGroups
-              });
-            });
+            res.redirect('/wordgroups/' + storedWord.wordGroupId);
           });
         });
       });

@@ -18,6 +18,16 @@ router.post('/firstgroup', authenticationEnsurer, (req, res, next) => {
   });
 });
 
+router.post('/new', authenticationEnsurer, (req, res, next) => {
+  Wordgroup.create({
+    wordGroupId: uuidv4(),
+    wordGroupName: req.body.wordGroupName,
+    createdBy: req.user.id
+  }).then((wordGroup) => {
+    res.redirect('/wordgroups/' + wordGroup.wordGroupId);
+  });
+});
+
 router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
   let storedWordGroup = null;
   let storedWords = null;
