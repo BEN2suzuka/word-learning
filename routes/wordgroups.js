@@ -45,24 +45,24 @@ router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
         order: [['"updatedAt"', 'DESC']]
       }).then((words) => {
         storedWords = words;
-        Memory.findAll({
+        return Memory.findAll({
           where: { userId: req.user.id, wordGroupId: req.params.wordGroupId }
-        }).then((memories) => {
-          const memoryMap = new Map();  // key: wordId, value: memories.memory
-          memories.forEach((m) => {
-            memoryMap.set(m.wordId, m.memory);
-          });
-          storedWords.forEach((w) => {
-            const a = memoryMap.get(w.wordId) || 0;
-            memoryMap.set(w.wordId, a);
-          })
-          console.log(memoryMap);  // TODO 除去する
-          res.render('wordgroup', {
-            user: req.user,
-            wordGroup: storedWordGroup,
-            words: storedWords,
-            memories: memoryMap
-          });
+        })
+      }).then((memories) => {
+        const memoryMap = new Map();  // key: wordId, value: memories.memory
+        memories.forEach((m) => {
+          memoryMap.set(m.wordId, m.memory);
+        });
+        storedWords.forEach((w) => {
+          const a = memoryMap.get(w.wordId) || 0;
+          memoryMap.set(w.wordId, a);
+        });
+        console.log(memoryMap);  // TODO 除去する
+        res.render('wordgroup', {
+          user: req.user,
+          wordGroup: storedWordGroup,
+          words: storedWords,
+          memories: memoryMap
         });
       });
     } else {
@@ -74,27 +74,39 @@ router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
 });
 
 router.post('/:wordGroupId/delete', authenticationEnsurer, (req, res, next) => {
-  const wordGroupId = req.params.wordGroupId
-  Memory.findAll({
-    where: { wordGroupId: wordGroupId }
-  }).then((memories) => {
-    const promises = memories.map((m) => { return m.destroy(); });
-    return Promise.all(promises);
-  }).then(() => {
-    return Word.findAll({
-      where: { wordGroupId: wordGroupId }
-    });
-  }).then((words) => {
-    const promises = words.map((w) => { return w.destroy(); });
-    return Promise.all(promises);
-  }).then(() => {
-    return Wordgroup.findById(wordGroupId);
-  }).then((wordgroup) => {
-    return wordgroup.destroy();
-  }).then(() => {
-    console.log('All cleared.')  // TODO 除去する
-    res.redirect('/');
+  const wordGroupId = req.params.wordGroupId;
+  let storedWordGroup = null;
+  Wordgroup.findById(wordGroupId).then((wordGroup) => {
+    storedWordGroup = wordGroup;
+    if (isMine(req, wordGroup)) {
+      Memory.findAll({
+        where: { wordGroupId: wordGroupId }
+      }).then((memories) => {
+        const promises = memories.map((m) => { return m.destroy(); });
+        return Promise.all(promises);
+      }).then(() => {
+        return Word.findAll({
+          where: { wordGroupId: wordGroupId }
+        });
+      }).then((words) => {
+        const promises = words.map((w) => { return w.destroy(); });
+        return Promise.all(promises);
+      }).then(() => {
+        return storedWordGroup.destroy();
+      }).then(() => {
+        console.log('指定されたグループおよび関連データを削除しました');  // TODO 除去する
+        res.redirect('/');
+      });
+    } else {
+      const err = new Error('指定されたグループがない、または、削除する権限がありません');
+      err.status = 404;
+      next(err);
+    }
   });
 });
+
+function isMine(req, wordGroup) {
+  return wordGroup && wordGroup.createdBy === req.user.id;
+}
 
 module.exports = router;

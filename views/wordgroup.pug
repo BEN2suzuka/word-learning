@@ -7,6 +7,20 @@ block content
   div
     a(href="/") トップページへ戻る
   - var isMine = user.id === wordGroup.user.userId
+  if isMine
+    h5 単語登録フォーム
+    form(method="post", action="/words/new")
+      div
+        h5 登録グループ
+        p #{wordGroup.wordGroupName}
+        input(type="hidden" name="wordGroupId" value=`${wordGroup.wordGroupId}`)
+      div
+        h5 単語
+        input(type="text" name="wordName")
+      div
+        h5 単語の答え
+        input(type="text" name="wordAnswer")
+      button(type="submit") 単語を登録する
   table
     tr
       th 削除
@@ -22,7 +36,7 @@ block content
               form(method="post", action=`/words/${word.wordId}/users/${user.id}/delete`)
                 button(type="submit") 削除
             else
-              p -
+              p ---
           td #{word.wordName}
           td #{word.wordAnswer}
           td

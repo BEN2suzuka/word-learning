@@ -1,8 +1,6 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
   div
     if user
       div
@@ -16,20 +14,6 @@ block content
             input(type="text" name="wordGroupName")
           button(type="submit") グループを登録する
 
-        h5 単語登録フォーム
-        form(method="post", action="/words/new")
-          div
-            h5 グループ ID
-              each wordGroup in wordGroups
-                input(type="radio" name="wordGroupId" value=`${wordGroup.wordGroupId}`)
-                span #{wordGroup.wordGroupName}
-          div
-            h5 単語
-            input(type="text" name="wordName")
-          div
-            h5 単語の答え
-            input(type="text" name="wordAnswer")
-          button(type="submit") 単語を登録する
         h3 単語グループ一覧
         
         table.table
@@ -44,6 +28,12 @@ block content
         form(method="post", action="/wordgroups/firstgroup")
           button(type="submit") 単語グループ「未分類」を新規作成
     else
+      div.jumbotron.my-3
+        h1 BEN2 の単語帳 Web アプリ
+        p ポートフォリオサイト : https://ben2suzuka.github.io
+        p BEN2 の Twitter : https://twitter.com/BEN2suzuka
+        p このサービスでは、Twitter アカウントのユーザー ID によって利用者を識別します。
       div
-        a(href="/login") Twitter でログイン
+        a(href="/login")
+          button(type="button" class="btn btn-primary btn-lg btn-block" id="login-btn") Twitter でログイン
 
