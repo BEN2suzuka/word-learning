@@ -6,6 +6,7 @@ const User = require('../models/user');
 const Word = require('../models/word');
 const Wordgroup = require('../models/wordgroup');
 const Memory = require('../models/memory');
+const Favorite = require('../models/favorite');
 const uuidv4 = require('uuid/v4');
 
 router.post('/firstgroup', authenticationEnsurer, (req, res, next) => {
@@ -31,6 +32,8 @@ router.post('/new', authenticationEnsurer, (req, res, next) => {
 router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
   let storedWordGroup = null;
   let storedWords = null;
+  let storedMemories = null;
+  let favo = null;
   Wordgroup.findOne({
     include: [{
       model: User,
@@ -47,26 +50,38 @@ router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
         storedWords = words;
         return Memory.findAll({
           where: { userId: req.user.id, wordGroupId: req.params.wordGroupId }
-        })
+        });
       }).then((memories) => {
+        storedMemories = memories;
+        return Favorite.findOne({
+          where: { userId: req.user.id, wordGroupId: req.params.wordGroupId }
+        });
+      }).then((favorite) => {
         const memoryMap = new Map();  // key: wordId, value: memories.memory
-        memories.forEach((m) => {
+        storedMemories.forEach((m) => {
           memoryMap.set(m.wordId, m.memory);
         });
         storedWords.forEach((w) => {
           const a = memoryMap.get(w.wordId) || 0;
           memoryMap.set(w.wordId, a);
         });
+        if (favorite === null) {
+          favo = Number(0);
+        } else {
+          favo = Number(favorite.favorite);
+        }
+        console.log(favo);
         console.log(memoryMap);  // TODO 除去する
         res.render('wordgroup', {
           user: req.user,
           wordGroup: storedWordGroup,
           words: storedWords,
-          memories: memoryMap
+          memories: memoryMap,
+          favorite: favo
         });
       });
     } else {
-      const err = new Error('指定された単語グループは見つかりません');
+      const err = new Error('指定された単語帳は存在しない、または、すでに削除されています');
       err.status = 404;
       next(err);
     }
@@ -94,14 +109,35 @@ router.post('/:wordGroupId/delete', authenticationEnsurer, (req, res, next) => {
       }).then(() => {
         return storedWordGroup.destroy();
       }).then(() => {
+        return Favorite.findAll({
+          where: { wordGroupId: wordGroupId }
+        });
+      }).then((favorites) => {
+        const promises = favorites.map((f) => { return f.destroy(); });
+        return Promise.all(promises);
+      }).then(() => {
         console.log('指定されたグループおよび関連データを削除しました');  // TODO 除去する
         res.redirect('/');
       });
     } else {
-      const err = new Error('指定されたグループがない、または、削除する権限がありません');
+      const err = new Error('指定された単語帳が存在しない、または、削除する権限がありません');
       err.status = 404;
       next(err);
     }
+  });
+});
+
+router.post('/:wordGroupId/users/:userId/favorite', authenticationEnsurer, (req, res, next) => {
+  const wordGroupId = req.params.wordGroupId;
+  const userId = req.params.userId;
+  let favorite = req.body.favorite;
+  favorite = favorite ? parseInt(favorite) : 0;
+  Favorite.upsert({
+    userId: userId,
+    wordGroupId: wordGroupId,
+    favorite: favorite
+  }).then(() => {
+    res.json({ status: 'OK', favorite: favorite });
   });
 });
 

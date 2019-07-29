@@ -13,9 +13,13 @@ var User = require('./models/user');
 var Wordgroup = require('./models/wordgroup');
 var Word = require('./models/word');
 var Memory = require('./models/memory');
+var Favorite = require('./models/favorite');
 User.sync().then(() => {
   Wordgroup.belongsTo(User, { foreignKey: 'createdBy' });
-  Wordgroup.sync();
+  Wordgroup.sync().then(() => {
+    Favorite.belongsTo(Wordgroup, { foreignKey: 'wordGroupId' });
+    Favorite.sync();
+  });
   Word.sync();
   Memory.sync();
 });

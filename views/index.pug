@@ -16,7 +16,6 @@ block content
             form(method="post", action="/wordgroups/new").form-row
               div.col-auto
                 label 単語帳の名前
-              div.col-auto
                 input(type="text" name="wordGroupName" required)
               div.col-auto
                 button(type="submit").btn.btn-primary 単語帳を作る
@@ -32,11 +31,21 @@ block content
           div.card-body
             form(method="post", action="/wordgroups/firstgroup")
               button(type="submit").btn.btn-primary.btn-lg.btn-block 単語帳「未分類」を作る
+      - var hasFavorites = favorites.length > 0
+      if hasFavorites
+        div.card
+          div.card-header ブックマーク
+          div.card-body
+            div.list-group
+              each favorite in favorites
+                a(href=`/wordgroups/${favorite.wordGroupId}`).list-group-item.list-group-item-action #{favorite.wordgroup.wordGroupName}
     else
       div.jumbotron.my-3
         h1 BEN2 の単語帳 Web アプリ
-        p ポートフォリオサイト : https://ben2suzuka.github.io
-        p BEN2 の Twitter : https://twitter.com/BEN2suzuka
+        p ポートフォリオサイト : 
+          a(href="https://ben2suzuka.github.io") https://ben2suzuka.github.io
+        p BEN2 の Twitter : 
+          a(href="https://twitter.com/BEN2suzuka") https://twitter.com/BEN2suzuka
         p このサービスでは、Twitter アカウントのユーザー ID によって利用者を識別します。
       div
         a(href="/login").btn.btn-primary.btn-lg.btn-block Twitter でログイン

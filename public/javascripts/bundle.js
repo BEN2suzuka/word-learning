@@ -112,8 +112,30 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.memory-toggle-button').each(func
       memory: nextmemory
     }, function (data) {
       button.data('memory', data.memory);
-      var memoryLabels = ['まだ', 'OK!'];
+      var memoryLabels = ['まだ！', '覚えた'];
       button.text(memoryLabels[data.memory]);
+      var buttonStyles = ['btn-warning', 'btn-success'];
+      button.removeClass('btn-warning btn-success');
+      button.addClass(buttonStyles[data.memory]);
+    });
+  });
+});
+jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-toggle-button').each(function (index, element) {
+  var button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(element);
+  button.click(function () {
+    var userId = button.data('user-id');
+    var wordGroupId = button.data('wordgroup-id');
+    var favorite = button.data('favorite');
+    var nextFavorite = (favorite + 1) % 2;
+    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/wordgroups/".concat(wordGroupId, "/users/").concat(userId, "/favorite"), {
+      favorite: nextFavorite
+    }, function (data) {
+      button.data('favorite', data.favorite);
+      var favoriteLabels = ['ブックマークに追加', 'ブックマークを解除'];
+      button.text(favoriteLabels[data.favorite]);
+      var favoriteButtonStyles = ['btn-success', 'btn-warning'];
+      button.removeClass('btn-success btn-warning');
+      button.addClass(favoriteButtonStyles[data.favorite]);
     });
   });
 });

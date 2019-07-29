@@ -44,7 +44,7 @@ router.post('/:wordId/users/:userId/delete', authenticationEnsurer, (req, res, n
         res.redirect('/wordgroups/' + storedWord.wordGroupId);
       });
     } else {
-      const err = new Error('指定された単語がない、または、削除する権限がありません');
+      const err = new Error('指定された単語が存在しない、または、削除する権限がありません');
       err.status = 404;
       next(err);
     }
