@@ -3,30 +3,35 @@ extends layout
 block content
   div
     if user
-      div
-        a(href="/logout") #{user.username} をログアウト
+      nav.navbar.navbar-light(style="background-color: #e3f2fd;")
+        h3.navbar-brand 単語帳 Web アプリ
+        ul.navbar-nav
+          li.nav-item
+            a(href="/logout").nav-link #{user.username} をログアウト
       - var hasWordGroups = wordGroups.length > 0
       if hasWordGroups
-        h5 グループ新規作成フォーム
-        form(method="post", action="/wordgroups/new")
-          div
-            h5 グループ名
-            input(type="text" name="wordGroupName")
-          button(type="submit") グループを登録する
-
-        h3 単語グループ一覧
-        
-        table.table
-          tr
-            th 単語グループ名
-          each wordGroup in wordGroups
-            tr
-              td
-                a(href=`/wordgroups/${wordGroup.wordGroupId}`) #{wordGroup.wordGroupName}
+        div.card
+          div.card-header 単語帳を新しく作る
+          div.card-body
+            form(method="post", action="/wordgroups/new").form-row
+              div.col-auto
+                label 単語帳の名前
+              div.col-auto
+                input(type="text" name="wordGroupName" required)
+              div.col-auto
+                button(type="submit").btn.btn-primary 単語帳を作る
+        div.card
+          div.card-header 作った単語帳
+          div.card-body
+            div.list-group
+              each wordGroup in wordGroups
+                a(href=`/wordgroups/${wordGroup.wordGroupId}`).list-group-item.list-group-item-action #{wordGroup.wordGroupName}
       else
-        h5 まずは単語グループを新規作成してください。
-        form(method="post", action="/wordgroups/firstgroup")
-          button(type="submit") 単語グループ「未分類」を新規作成
+        div.card
+          div.card-header まずは単語帳を作りましょう!!
+          div.card-body
+            form(method="post", action="/wordgroups/firstgroup")
+              button(type="submit").btn.btn-primary.btn-lg.btn-block 単語帳「未分類」を作る
     else
       div.jumbotron.my-3
         h1 BEN2 の単語帳 Web アプリ
@@ -34,6 +39,5 @@ block content
         p BEN2 の Twitter : https://twitter.com/BEN2suzuka
         p このサービスでは、Twitter アカウントのユーザー ID によって利用者を識別します。
       div
-        a(href="/login")
-          button(type="button" class="btn btn-primary btn-lg btn-block" id="login-btn") Twitter でログイン
+        a(href="/login").btn.btn-primary.btn-lg.btn-block Twitter でログイン
 
