@@ -107,14 +107,14 @@ router.post('/:wordGroupId/delete', authenticationEnsurer, (req, res, next) => {
         const promises = words.map((w) => { return w.destroy(); });
         return Promise.all(promises);
       }).then(() => {
-        return storedWordGroup.destroy();
-      }).then(() => {
         return Favorite.findAll({
           where: { wordGroupId: wordGroupId }
         });
       }).then((favorites) => {
         const promises = favorites.map((f) => { return f.destroy(); });
         return Promise.all(promises);
+      }).then(() => {
+        return storedWordGroup.destroy();
       }).then(() => {
         console.log('指定されたグループおよび関連データを削除しました');  // TODO 除去する
         res.redirect('/');
