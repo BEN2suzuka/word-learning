@@ -8,8 +8,10 @@ const Wordgroup = require('../models/wordgroup');
 const Memory = require('../models/memory');
 const Favorite = require('../models/favorite');
 const uuidv4 = require('uuid/v4');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
-router.post('/firstgroup', authenticationEnsurer, (req, res, next) => {
+router.post('/firstgroup', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Wordgroup.create({
     wordGroupId: uuidv4(),
     wordGroupName: '未分類',
@@ -19,7 +21,7 @@ router.post('/firstgroup', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.post('/new', authenticationEnsurer, (req, res, next) => {
+router.post('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Wordgroup.create({
     wordGroupId: uuidv4(),
     wordGroupName: req.body.wordGroupName,
@@ -29,7 +31,7 @@ router.post('/new', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
+router.get('/:wordGroupId', authenticationEnsurer, csrfProtection, (req, res, next) => {
   let storedWordGroup = null;
   let storedWords = null;
   let storedMemories = null;
@@ -77,7 +79,8 @@ router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
           wordGroup: storedWordGroup,
           words: storedWords,
           memories: memoryMap,
-          favorite: favo
+          favorite: favo,
+          csrfToken: req.csrfToken()
         });
       });
     } else {
@@ -88,7 +91,7 @@ router.get('/:wordGroupId', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.post('/:wordGroupId/delete', authenticationEnsurer, (req, res, next) => {
+router.post('/:wordGroupId/delete', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const wordGroupId = req.params.wordGroupId;
   let storedWordGroup = null;
   Wordgroup.findById(wordGroupId).then((wordGroup) => {
@@ -127,7 +130,7 @@ router.post('/:wordGroupId/delete', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.post('/:wordGroupId/users/:userId/favorite', authenticationEnsurer, (req, res, next) => {
+router.post('/:wordGroupId/users/:userId/favorite', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const wordGroupId = req.params.wordGroupId;
   const userId = req.params.userId;
   let favorite = req.body.favorite;

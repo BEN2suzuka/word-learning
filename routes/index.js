@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Wordgroup = require('../models/wordgroup');
 const Favorite = require('../models/favorite');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', csrfProtection, (req, res, next) => {
   let storedWordGroups = null;
   if (req.user) {
     Wordgroup.findAll({
@@ -22,10 +24,15 @@ router.get('/', function(req, res, next) {
       res.render('index', {
         user: req.user,
         wordGroups: storedWordGroups,
-        favorites: favorites
+        favorites: favorites,
+        csrfToken: req.csrfToken()
       });
     });
   } else {
+    const from = req.query.from;
+    if (from) {
+      res.cookie('loginFrom', from, { expires: new Date(Date.now() + 600000) });
+    }
     res.render('index', { user: req.user });
   }
 });

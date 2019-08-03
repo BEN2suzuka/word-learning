@@ -4,8 +4,10 @@ const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
 const Word = require('../models/word');
 const Memory = require('../models/memory');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
-router.post('/new', authenticationEnsurer, (req, res, next) => {
+router.post('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const updatedAt = new Date();
   Word.create({
     wordGroupId: req.body.wordGroupId,
@@ -24,7 +26,7 @@ router.post('/new', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.post('/:wordId/users/:userId/delete', authenticationEnsurer, (req, res, next) => {
+router.post('/:wordId/users/:userId/delete', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const wordId = req.params.wordId;
   let storedWord = null;
   Word.findOne({

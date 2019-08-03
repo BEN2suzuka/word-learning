@@ -32,6 +32,7 @@ block content
         div.card-header 単語を追加
         div.card-body
           form(method="post", action="/words/new").form-row
+            input(type="hidden" name="_csrf" value!=csrfToken)
             input(type="hidden" name="wordGroupId" value=`${wordGroup.wordGroupId}`)
             div.col-auto
               label 単語
@@ -60,6 +61,7 @@ block content
                 td
                   if isMine
                     form(method="post", action=`/words/${word.wordId}/users/${user.id}/delete`)
+                      input(type="hidden" name="_csrf" value!=csrfToken)
                       button(type="submit").btn.btn-danger －
                   else
                     p ---
@@ -77,4 +79,5 @@ block content
         div.card-body
           p 注意 : 単語帳に含まれる単語も全て削除されます
           form(method="post", action=`/wordgroups/${wordGroup.wordGroupId}/delete`)
+            input(type="hidden" name="_csrf" value!=csrfToken)
             button(type="submit").btn.btn-danger 単語帳を削除

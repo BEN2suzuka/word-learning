@@ -14,6 +14,7 @@ block content
           div.card-header 単語帳を新しく作る
           div.card-body
             form(method="post", action="/wordgroups/new").form-row
+              input(type="hidden" name="_csrf" value!=csrfToken)
               div.col-auto
                 label 単語帳の名前
                 input(type="text" name="wordGroupName" required)
@@ -30,6 +31,7 @@ block content
           div.card-header まずは単語帳を作りましょう!!
           div.card-body
             form(method="post", action="/wordgroups/firstgroup")
+              input(type="hidden" name="_csrf" value!=csrfToken)
               button(type="submit").btn.btn-primary.btn-lg.btn-block 単語帳「未分類」を作る
       - var hasFavorites = favorites.length > 0
       if hasFavorites

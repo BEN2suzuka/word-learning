@@ -1,0 +1,7 @@
+{
+  "name": "word-learning",
+  "description": "BEN2の単語帳Webアプリ",
+  "logo": "",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}
